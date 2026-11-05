@@ -19,7 +19,7 @@ const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // สร้างลิงก์สั้น
 app.post('/api/links', createLimiter, (req, res) => {
-    const { url } = req.body;
+    const { url, alias } = req.body;
 
     try {
         const parsed = new URL(url);
@@ -28,7 +28,17 @@ app.post('/api/links', createLimiter, (req, res) => {
         return res.status(400).json({ error: 'URL ไม่ถูกต้อง (ต้องขึ้นต้นด้วย http:// หรือ https://)' });
     }
 
-    const code = nanoid(7);
+    let code;
+    if (alias) {
+        if (!/^[A-Za-z0-9_-]{3,30}$/.test(alias) || alias.toLowerCase() === 'api') {
+            return res.status(400).json({ error: 'alias ใช้ได้เฉพาะ a-z, 0-9, - และ _ ความยาว 3-30 ตัว' });
+        }
+        const exists = db.prepare('SELECT 1 FROM links WHERE code = ?').get(alias);
+        if (exists) return res.status(409).json({ error: 'alias นี้ถูกใช้แล้ว' });
+        code = alias;
+    } else {
+        code = nanoid(7);
+    }
     db.prepare('INSERT INTO links (code, original_url) VALUES (?, ?)').run(code, url);
 
     res.status(201).json({ code, short_url: `${BASE_URL}/${code}`, original_url: url });
