@@ -1,15 +1,24 @@
 const express = require('express');
 const { nanoid } = require('nanoid');
 const db = require('./db');
+const rateLimit = require('express-rate-limit');
 
 const app = express();
 app.use(express.json());
+// จำกัดการสร้างลิงก์: 10 ครั้ง ต่อ 1 นาที ต่อ IP
+const createLimiter = rateLimit({
+    windowMs: 60 * 1000,
+    limit: 10,
+    standardHeaders: true,
+    legacyHeaders: false,
+    message: { error: 'สร้างลิงก์ถี่เกินไป ลองใหม่ในอีกสักครู่' },
+});
 
 const PORT = process.env.PORT || 3000;
 const BASE_URL = process.env.BASE_URL || `http://localhost:${PORT}`;
 
 // สร้างลิงก์สั้น
-app.post('/api/links', (req, res) => {
+app.post('/api/links', createLimiter, (req, res) => {
     const { url } = req.body;
 
     try {
