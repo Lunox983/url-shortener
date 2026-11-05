@@ -7,6 +7,8 @@ import './App.css'
 export default function App() {
   const [links, setLinks] = useState([])
   const [url, setUrl] = useState('')
+  const [alias, setAlias] = useState('')
+  const [copied, setCopied] = useState('')
   const [error, setError] = useState('')
   const [selected, setSelected] = useState(null)
   const [stats, setStats] = useState(null)
@@ -26,11 +28,12 @@ export default function App() {
     const res = await fetch('/api/links', {
       method: 'POST',
       headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ url }),
+      body: JSON.stringify({ url, alias: alias || undefined }),
     })
     const data = await res.json()
     if (!res.ok) return setError(data.error)
     setUrl('')
+    setAlias('')
     loadLinks()
   }
 
@@ -38,6 +41,12 @@ export default function App() {
     setSelected(code)
     const res = await fetch(`/api/links/${code}/stats`)
     setStats(await res.json())
+  }
+
+  const copyLink = async (shortUrl, code) => {
+    await navigator.clipboard.writeText(shortUrl)
+    setCopied(code)
+    setTimeout(() => setCopied(''), 1500)
   }
 
   return (
@@ -49,6 +58,12 @@ export default function App() {
           value={url}
           onChange={(e) => setUrl(e.target.value)}
           placeholder="https://example.com/very/long/link"
+        />
+        <input
+          className="alias"
+          value={alias}
+          onChange={(e) => setAlias(e.target.value)}
+          placeholder="alias (ไม่บังคับ)"
         />
         <button type="submit">ย่อลิงก์</button>
       </form>
@@ -64,7 +79,12 @@ export default function App() {
               <td><a href={l.short_url} target="_blank" rel="noreferrer">{l.short_url}</a></td>
               <td className="dest">{l.original_url}</td>
               <td>{l.click_count}</td>
-              <td><button onClick={() => openStats(l.code)}>ดูสถิติ</button></td>
+              <td className="actions">
+                <button onClick={() => copyLink(l.short_url, l.code)}>
+                  {copied === l.code ? 'ก๊อปแล้ว ✓' : 'ก๊อป'}
+                </button>
+                <button onClick={() => openStats(l.code)}>ดูสถิติ</button>
+              </td>
             </tr>
           ))}
         </tbody>

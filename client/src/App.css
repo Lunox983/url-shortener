@@ -63,3 +63,12 @@ td {
   padding: 16px;
   border-radius: 8px;
 }
+
+.create input.alias {
+  flex: 0 0 180px;
+}
+
+.actions {
+  display: flex;
+  gap: 6px;
+}
