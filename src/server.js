@@ -2,6 +2,7 @@ const express = require('express');
 const { nanoid } = require('nanoid');
 const db = require('./db');
 const rateLimit = require('express-rate-limit');
+const path = require('path');
 
 const app = express();
 app.use(express.json());
@@ -78,6 +79,9 @@ app.get('/api/links/:code/stats', (req, res) => {
     res.json({ code: link.code, original_url: link.original_url, total_clicks: total, daily, referrers });
 });
 
+// เสิร์ฟหน้า React ที่ build แล้ว
+const clientDist = path.join(__dirname, '..', 'client', 'dist');
+app.use(express.static(clientDist));
 // redirect + เก็บข้อมูลคลิก
 app.get('/:code', (req, res) => {
     const link = db.prepare('SELECT * FROM links WHERE code = ?').get(req.params.code);
