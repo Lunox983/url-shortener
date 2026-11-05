@@ -10,6 +10,12 @@
 - Rate limiting กันการสร้างลิงก์ถี่เกินไป (10 ครั้ง/นาที/IP)
 - มี automated tests
 
+## Live Demo
+
+https://url-shortener-aqax.onrender.com
+
+> หมายเหตุ: รันบนแพลนฟรีของ Render เข้าครั้งแรกอาจช้าประมาณ 50 วินาที และข้อมูลจะถูกรีเซ็ตเมื่อเซิร์ฟเวอร์ restart
+
 ## Tech Stack
 
 - **Backend:** Node.js, Express 5, better-sqlite3
