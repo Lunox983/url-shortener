@@ -15,6 +15,7 @@
 https://url-shortener-aqax.onrender.com
 
 > หมายเหตุ: รันบนแพลนฟรีของ Render เข้าครั้งแรกอาจช้าประมาณ 50 วินาที และข้อมูลจะถูกรีเซ็ตเมื่อเซิร์ฟเวอร์ restart
+![dashboard](docs/dashboard.png)
 
 ## Tech Stack
 
